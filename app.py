@@ -25,19 +25,45 @@ def set_background(image_file):
             background-attachment: fixed;
         }}
 
-        /* içerik okunabilirliği için yarı saydam arka plan */
+        /* ANA İÇERİK KUTUSU */
         .block-container {{
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.65);
             padding: 2rem;
-            border-radius: 12px;
+            border-radius: 16px;
+            backdrop-filter: blur(6px);
         }}
+
+        /* BAŞLIK */
+        h1 {{
+            color: white !important;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+        }}
+
+        /* ALT BAŞLIK */
+        h2, h3 {{
+            color: #f1f1f1 !important;
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
+        }}
+
+        /* NORMAL METİN */
+        p, label {{
+            color: #eaeaea !important;
+            font-size: 16px;
+        }}
+
+        /* RADIO BUTON */
+        .stRadio > div {{
+            background: rgba(255,255,255,0.08);
+            padding: 10px;
+            border-radius: 10px;
+        }}
+
         </style>
         """,
         unsafe_allow_html=True
     )
-
-# arka plan dosyan
-set_background("arkaplan2.png")
 
 # -----------------------------
 # SESSION STATE
