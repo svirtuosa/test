@@ -9,7 +9,7 @@ import base64
 st.set_page_config(page_title="Etik Profil Testi", page_icon="🧠", layout="centered")
 
 # -----------------------------
-# ARKA PLAN + ORTALAMA + STİL
+# ARKA PLAN + STİL
 # -----------------------------
 def set_background(image_file):
     with open(image_file, "rb") as f:
@@ -23,16 +23,6 @@ def set_background(image_file):
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }}
-
-        .main > div {{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
         }}
 
         .block-container {{
@@ -42,11 +32,15 @@ def set_background(image_file):
             backdrop-filter: blur(6px);
             max-width: 700px;
             width: 100%;
+
+            margin-top: 12vh;   /* 🔥 aşağı ortalama */
+            margin-bottom: 5vh;
         }}
 
         h1 {{
             color: white !important;
             text-align: center;
+            font-weight: 700;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
         }}
 
@@ -56,12 +50,22 @@ def set_background(image_file):
 
         p, label {{
             color: #eaeaea !important;
+            font-size: 16px;
         }}
 
         .stRadio > div {{
             background: rgba(255,255,255,0.08);
             padding: 10px;
             border-radius: 10px;
+        }}
+
+        /* BUTON STİLİ */
+        .stButton > button {{
+            width: 100%;
+            border-radius: 10px;
+            height: 45px;
+            font-size: 16px;
+            font-weight: 600;
         }}
         </style>
         """,
@@ -248,3 +252,4 @@ else:
         st.session_state.step = 0
         st.session_state.answers = []
         st.rerun()
+        
