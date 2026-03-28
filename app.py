@@ -1,11 +1,43 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
+import base64
 
 # -----------------------------
 # SAYFA AYARI
 # -----------------------------
 st.set_page_config(page_title="Etik Profil Testi", page_icon="🧠", layout="centered")
+
+# -----------------------------
+# ARKA PLAN EKLEME
+# -----------------------------
+def set_background(image_file):
+    with open(image_file, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{data}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+
+        /* içerik okunabilirliği için yarı saydam arka plan */
+        .block-container {{
+            background: rgba(0, 0, 0, 0.55);
+            padding: 2rem;
+            border-radius: 12px;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# arka plan dosyan
+set_background("arkaplan2.png")
 
 # -----------------------------
 # SESSION STATE
@@ -17,7 +49,7 @@ if "answers" not in st.session_state:
     st.session_state.answers = []
 
 # -----------------------------
-# SORULAR (daha doğal dil)
+# SORULAR
 # -----------------------------
 questions = [
     ("İş yerinde bir arkadaşın küçük bir hata yaptı ve kimse fark etmedi. Bu durum küçük bir zarara yol açacak. Ne yaparsın?", [
@@ -93,7 +125,7 @@ def generate_comment(scores):
     yorum += f"Bunun yanında {secondary[0]} eğilimin de dikkat çekiyor. "
 
     if scores["Deontoloji"] > 0 and scores["Faydacılık"] > 0:
-        yorum += "Bazı durumlarda kural ile sonuç arasında ikilem yaşayabilirsin. "
+        yorum += "Zaman zaman kural ile sonuç arasında ikilem yaşayabilirsin. "
 
     if scores["Erdem"] >= 4:
         yorum += "Karakter ve değerler senin için güçlü bir referans noktası. "
@@ -104,19 +136,14 @@ def generate_comment(scores):
     return yorum
 
 # -----------------------------
-# BAŞLANGIÇ EKRANI
+# AKIŞ
 # -----------------------------
 if st.session_state.step == 0:
     st.title("🧠 Etik Karar Verme Testi")
-    st.markdown("Bu test, karar verirken hangi etik yaklaşımı benimsediğini analiz eder.")
-    
     if st.button("Teste Başla"):
         st.session_state.step = 1
         st.rerun()
 
-# -----------------------------
-# SORU EKRANI (TEK TEK)
-# -----------------------------
 elif st.session_state.step <= len(questions):
     q_index = st.session_state.step - 1
     q, options = questions[q_index]
@@ -125,7 +152,6 @@ elif st.session_state.step <= len(questions):
     st.subheader(f"Soru {q_index + 1}")
     st.write(q)
 
-    # boş başlangıç (None)
     choice = st.radio(
         "Seçimin:",
         options=[opt[0] for opt in options],
@@ -134,15 +160,12 @@ elif st.session_state.step <= len(questions):
 
     if st.button("Devam Et"):
         if choice is None:
-            st.warning("Lütfen bir seçenek işaretle.")
+            st.warning("Lütfen bir seçenek seç.")
         else:
             st.session_state.answers.append((choice, options))
             st.session_state.step += 1
             st.rerun()
 
-# -----------------------------
-# SONUÇ EKRANI
-# -----------------------------
 else:
     st.title("📊 Sonuçların")
 
@@ -160,29 +183,16 @@ else:
 
     dominant = max(scores, key=scores.get)
 
-    # Kart görünümü
-    st.markdown("### Etik Dağılımın")
     col1, col2 = st.columns(2)
-
-    items = list(scores.items())
-
-    for i, (k, v) in enumerate(items):
+    for i, (k, v) in enumerate(scores.items()):
         with (col1 if i % 2 == 0 else col2):
             st.metric(label=k, value=v)
 
-    st.markdown("---")
-
     st.markdown(f"### 🧠 Baskın Yaklaşım: {dominant}")
+    st.image("https://via.placeholder.com/600x200.png?text=Etik+Profil")
 
-    # Görsel alanı (placeholder)
-    st.image("https://via.placeholder.com/600x200.png?text=Etik+Yaklaşım", use_container_width=True)
-
-    st.markdown("### 🧾 Analiz")
     st.success(generate_comment(scores))
 
-    # -----------------------------
-    # RADAR CHART (küçük ve dengeli)
-    # -----------------------------
     labels = list(scores.keys())
     values = list(scores.values())
     values += values[:1]
@@ -190,7 +200,7 @@ else:
     angles = np.linspace(0, 2*np.pi, len(labels), endpoint=False).tolist()
     angles += angles[:1]
 
-    fig, ax = plt.subplots(figsize=(4,4))  # küçük grafik
+    fig, ax = plt.subplots(figsize=(4,4))
     ax.plot(angles, values)
     ax.fill(angles, values, alpha=0.2)
 
@@ -199,7 +209,6 @@ else:
 
     st.pyplot(fig)
 
-    # yeniden başlat
     if st.button("Tekrar Çöz"):
         st.session_state.step = 0
         st.session_state.answers = []
