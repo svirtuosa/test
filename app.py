@@ -9,7 +9,7 @@ import base64
 st.set_page_config(page_title="Etik Profil Testi", page_icon="🧠", layout="centered")
 
 # -----------------------------
-# ARKA PLAN EKLEME
+# ARKA PLAN + ORTALAMA + STİL
 # -----------------------------
 def set_background(image_file):
     with open(image_file, "rb") as f:
@@ -23,48 +23,53 @@ def set_background(image_file):
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }}
 
-        /* ANA İÇERİK KUTUSU */
+        .main > div {{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }}
+
         .block-container {{
             background: rgba(0, 0, 0, 0.65);
             padding: 2rem;
             border-radius: 16px;
             backdrop-filter: blur(6px);
+            max-width: 700px;
+            width: 100%;
         }}
 
-        /* BAŞLIK */
         h1 {{
             color: white !important;
             text-align: center;
-            font-weight: 700;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
         }}
 
-        /* ALT BAŞLIK */
         h2, h3 {{
             color: #f1f1f1 !important;
-            text-shadow: 1px 1px 6px rgba(0,0,0,0.8);
         }}
 
-        /* NORMAL METİN */
         p, label {{
             color: #eaeaea !important;
-            font-size: 16px;
         }}
 
-        /* RADIO BUTON */
         .stRadio > div {{
             background: rgba(255,255,255,0.08);
             padding: 10px;
             border-radius: 10px;
         }}
-
         </style>
         """,
         unsafe_allow_html=True
     )
+
 set_background("arkaplan2.png")
+
 # -----------------------------
 # SESSION STATE
 # -----------------------------
@@ -141,7 +146,7 @@ questions = [
 ]
 
 # -----------------------------
-# YORUM FONKSİYONU
+# YORUM
 # -----------------------------
 def generate_comment(scores):
     sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
@@ -219,6 +224,9 @@ else:
 
     st.success(generate_comment(scores))
 
+    # -----------------------------
+    # KÜÇÜK RADAR CHART
+    # -----------------------------
     labels = list(scores.keys())
     values = list(scores.values())
     values += values[:1]
@@ -226,12 +234,13 @@ else:
     angles = np.linspace(0, 2*np.pi, len(labels), endpoint=False).tolist()
     angles += angles[:1]
 
-    fig, ax = plt.subplots(figsize=(4,4))
-    ax.plot(angles, values)
-    ax.fill(angles, values, alpha=0.2)
+    fig, ax = plt.subplots(figsize=(3,3))
+    ax.plot(angles, values, linewidth=1)
+    ax.fill(angles, values, alpha=0.15)
 
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(labels, fontsize=8)
+    ax.set_yticks([])
 
     st.pyplot(fig)
 
