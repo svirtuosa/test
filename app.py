@@ -5,65 +5,67 @@ import numpy as np
 st.set_page_config(page_title="Etik Profil Testi", page_icon="🧠", layout="centered")
 
 st.title("🧠 Etik Karar Verme Testi")
-st.write("Aşağıdaki soruları cevapla, etik profilini analiz edelim.")
+st.write("Bu test, kararlarının arkasındaki etik yaklaşımı analiz eder.")
 
-# Sorular ve şıklar
+# -----------------------------
+# SORULAR
+# -----------------------------
 questions = [
-    ("İş yerinde bir arkadaşın küçük bir hata yaptı...", [
+    ("İş yerinde bir arkadaşın küçük bir hata yaptı ve kimse fark etmedi.", [
         ("Hatayı bildiririm", "Deontoloji"),
         ("Bildirmem, zarar küçük", "Faydacılık"),
         ("Arkadaşımla konuşurum", "Erdem"),
         ("Kendi çıkarıma bakarım", "Egoizm")
     ]),
-    ("Beş kişiyi kurtarmak için bir kişi...", [
+    ("Beş kişiyi kurtarmak için bir kişinin zarar görmesi gerekiyor.", [
         ("Beş kişiyi kurtarırım", "Faydacılık"),
         ("Kimseye zarar vermem", "Deontoloji"),
         ("Niyet önemli", "Erdem"),
         ("Bana en az zarar", "Egoizm")
     ]),
-    ("Sınavda kopya çekme durumu...", [
+    ("Sınavda kopya çekersen yakalanmayacaksın.", [
         ("Çekerim, sonuç önemli", "Faydacılık"),
         ("Çekmem, kurallara aykırı", "Deontoloji"),
         ("Çekmem, karakterime zarar", "Erdem"),
         ("Çekerim, avantajım", "Egoizm")
     ]),
-    ("Arkadaşının hatasını gizleme...", [
+    ("Bir arkadaşın hatasını gizlemeni istiyor.", [
         ("Gerçeği söylerim", "Deontoloji"),
         ("Arkadaşımı korurum", "Faydacılık"),
         ("Kendisi itiraf etsin", "Erdem"),
         ("Fayda sağlarım", "Egoizm")
     ]),
-    ("Cüzdan buldun...", [
+    ("Yolda cüzdan buldun.", [
         ("Sahibine ulaştırırım", "Deontoloji"),
         ("Parayı alırım", "Egoizm"),
         ("Ulaştırmaya çalışırım", "Erdem"),
         ("Pay çıkarırım", "Faydacılık")
     ]),
-    ("Projede ekip çalışması...", [
+    ("Projede ekip arkadaşların çalışmıyor.", [
         ("Ekstra çalışırım", "Faydacılık"),
-        ("Kendi payım", "Deontoloji"),
+        ("Kendi payımı yaparım", "Deontoloji"),
         ("Ekibi motive ederim", "Erdem"),
         ("Minimum çaba", "Egoizm")
     ]),
-    ("Adil olmayan yasa...", [
+    ("Adil olmayan bir yasa var.", [
         ("Kurala uyarım", "Deontoloji"),
         ("Karşı çıkarım", "Erdem"),
         ("Uyar ama değiştirmeye çalışırım", "Faydacılık"),
         ("Umursamam", "Egoizm")
     ]),
-    ("İyi niyetli yalan...", [
-        ("Yalan yanlıştır", "Deontoloji"),
+    ("İyi niyetli bir yalan söylendi.", [
+        ("Yalan her zaman yanlıştır", "Deontoloji"),
         ("Sonuç iyiyse sorun yok", "Faydacılık"),
         ("Niyet önemli", "Erdem"),
         ("Bana zarar yoksa sorun yok", "Egoizm")
     ]),
-    ("Bağış yapma...", [
+    ("Bağış yapma fırsatın var.", [
         ("Bağış yaparım", "Erdem"),
         ("Yapmam", "Egoizm"),
         ("Duruma göre", "Faydacılık"),
         ("Bana fayda yok", "Egoizm")
     ]),
-    ("Karar verirken en önemli şey...", [
+    ("Karar verirken en önemli şey:", [
         ("Toplam fayda", "Faydacılık"),
         ("Kurallar", "Deontoloji"),
         ("Nasıl insanım", "Erdem"),
@@ -71,9 +73,42 @@ questions = [
     ]),
 ]
 
+# -----------------------------
+# YORUM FONKSİYONU
+# -----------------------------
+def generate_comment(scores):
+    sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    primary, secondary = sorted_scores[0], sorted_scores[1]
+
+    yorum = ""
+
+    if primary[0] == "Faydacılık":
+        yorum += "Kararlarında sonuç odaklısın. Maksimum fayda üretmek senin için belirleyici. "
+    elif primary[0] == "Deontoloji":
+        yorum += "Kurallar ve ilkeler senin pusulan. Doğru-yanlış çizgini koruyorsun. "
+    elif primary[0] == "Erdem":
+        yorum += "Nasıl bir insan olduğun, kararlarının merkezinde. Karakter odaklısın. "
+    elif primary[0] == "Egoizm":
+        yorum += "Kararlarında kişisel çıkarın önemli. Önce kendini konumlandırıyorsun. "
+
+    yorum += f"Aynı zamanda {secondary[0]} eğilimin de güçlü. "
+
+    if scores["Deontoloji"] > 0 and scores["Faydacılık"] > 0:
+        yorum += "Zaman zaman kural ile sonuç arasında içsel çatışma yaşayabilirsin. "
+
+    if scores["Egoizm"] >= 4:
+        yorum += "Kritik anlarda kendi çıkarına kayma ihtimalin yüksek. "
+
+    if scores["Erdem"] >= 4:
+        yorum += "Ahlaki kimliğin güçlü bir referans noktası. "
+
+    return yorum
+
+# -----------------------------
+# UI
+# -----------------------------
 answers = []
 
-# Soruları göster
 for i, (q, options) in enumerate(questions):
     st.subheader(f"{i+1}. {q}")
     choice = st.radio(
@@ -83,8 +118,9 @@ for i, (q, options) in enumerate(questions):
     )
     answers.append((choice, options))
 
-
-# Sonuç butonu
+# -----------------------------
+# SONUÇ
+# -----------------------------
 if st.button("Sonucu Göster 🚀"):
 
     scores = {
@@ -94,7 +130,6 @@ if st.button("Sonucu Göster 🚀"):
         "Egoizm": 0
     }
 
-    # Puanlama
     for choice, options in answers:
         for text, category in options:
             if text == choice:
@@ -103,21 +138,16 @@ if st.button("Sonucu Göster 🚀"):
     st.write("## 📊 Skorların")
     st.write(scores)
 
-    # Baskın akım
     dominant = max(scores, key=scores.get)
     st.write(f"### 🧠 Baskın etik yaklaşımın: **{dominant}**")
 
-    # Açıklama
-    explanations = {
-        "Faydacılık": "Kararlarında sonuç ve toplam fayda ön planda.",
-        "Deontoloji": "Kurallar ve doğru-yanlış ayrımı senin için belirleyici.",
-        "Erdem": "Karakter ve iyi insan olma motivasyonu baskın.",
-        "Egoizm": "Kararlarında kişisel çıkarın önemli rol oynuyor."
-    }
+    st.write("## 🧾 Etik Analizin")
+    comment = generate_comment(scores)
+    st.success(comment)
 
-    st.info(explanations[dominant])
-
-    # Radar grafik
+    # -----------------------------
+    # RADAR CHART
+    # -----------------------------
     labels = list(scores.keys())
     values = list(scores.values())
     values += values[:1]
