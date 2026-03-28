@@ -64,7 +64,7 @@ def set_background(image_file):
         """,
         unsafe_allow_html=True
     )
-
+set_background("arkaplan2.png")
 # -----------------------------
 # SESSION STATE
 # -----------------------------
